@@ -3,7 +3,7 @@ import ChatHeader from './ChatHeader';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
 
-function ChatContainer({ currentUser, onLogout, messages, onSendMessage, isAIResponding, onShowRecipe }) {
+function ChatContainer({ currentUser, onLogout, messages, onSendMessage, isAIResponding, onShowRecipe, onRecipeTitleClick }) {
     return (
         <div className="chat-container">
             <ChatHeader
@@ -15,6 +15,7 @@ function ChatContainer({ currentUser, onLogout, messages, onSendMessage, isAIRes
                 currentUser={currentUser}
                 isAIResponding={isAIResponding}
                 onShowRecipe={onShowRecipe}
+                onRecipeTitleClick={onRecipeTitleClick} // Pass down
             />
             <ChatInput
                 onSendMessage={onSendMessage}
