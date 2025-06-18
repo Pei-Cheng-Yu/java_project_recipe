@@ -1,6 +1,36 @@
-# Maven target directory
-/target/
+# Node modules
+node_modules/
 
+# Build output
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.*
+
+# Editor & IDE
+.vscode/
+.idea/
+*.iml
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Ignore Spring Boot config if it has secrets
+src/main/resources/application.properties
+*target
+
+*.db
+
+# Maven target directory
+*/target/
+target/
 # Compiled class files
 *.class
 
