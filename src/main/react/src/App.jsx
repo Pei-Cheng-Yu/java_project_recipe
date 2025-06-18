@@ -55,35 +55,47 @@ function App() {
     }, [authToken]);
 
     const handleLogin = async (usernameInput, password) => {
-        setAuthError('');
-        try {
-            const response = await api.loginUser({ username: usernameInput, password });
-            if (response.token) {
-                setAuthToken(response.token);
-                // Fetch user details to get the canonical username
-                const userDetailsResponse = await api.fetchUserDetails();
-                const match = userDetailsResponse.match(/Hello, (.*?) 👋/);
-                const actualUsername = match && match[1] ? match[1] : usernameInput;
-                setCurrentUser({ username: actualUsername });
-                return { success: true };
-            }
-        } catch (error) {
-            setAuthError(error.message || 'Login failed. Please try again.');
-            return { success: false, message: error.message || 'Login failed' };
+    // 🚫 Clear stale token before login attempt
+    localStorage.removeItem('authToken');
+    setAuthToken(null);
+    setAuthError('');
+
+    try {
+        const response = await api.loginUser({ username: usernameInput, password });
+        if (response.token) {
+            localStorage.setItem('authToken', response.token);
+            console.log("✅ JWT token received:", response.token);
+            setAuthToken(response.token);
+
+            const userDetailsResponse = await api.fetchUserDetails();
+            const match = userDetailsResponse.match(/Hello, (.*?) 👋/);
+            console.log("match:", match );
+            const actualUsername = match && match[1] ? match[1] : usernameInput;
+            setCurrentUser({ username: actualUsername });
+
+            return { success: true };
         }
-    };
+    } catch (error) {
+        setAuthError(error.message || 'Login failed. Please try again.');
+        return { success: false, message: error.message || 'Login failed' };
+    }
+};
+
 
     const handleRegister = async (username, password) => {
-        setAuthError('');
-        try {
-            const message = await api.registerUser({ username, password }); // Expects plain text
-            return { success: true, message: message || '註冊成功！請登入' };
-        } catch (error) {
-            setAuthError(error.message || 'Registration failed. Please try again.');
-            return { success: false, message: error.message || 'Registration failed' };
-        }
-    };
+    // 🚫 Clear stale token before registration
+    localStorage.removeItem('authToken');
+    setAuthToken(null);
+    setAuthError('');
 
+    try {
+        const message = await api.registerUser({ username, password });
+        return { success: true, message: message || '註冊成功！請登入' };
+    } catch (error) {
+        setAuthError(error.message || 'Registration failed. Please try again.');
+        return { success: false, message: error.message || 'Registration failed' };
+    }
+};
     const handleLogout = () => {
         setAuthToken(null);
         setCurrentUser(null);
@@ -101,7 +113,7 @@ function App() {
         };
         setMessages(prevMessages => [...prevMessages, newMessage]);
     };
-    
+
     const handleSendMessage = async (messageText) => {
         if (!messageText.trim() || isAIResponding) return;
         addMessageToList(messageText, 'user');

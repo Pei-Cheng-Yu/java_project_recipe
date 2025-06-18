@@ -24,6 +24,54 @@ Thumbs.db
 
 # Ignore Spring Boot config if it has secrets
 src/main/resources/application.properties
+*target
 
+*.db
+
+# Maven target directory
+*/target/
+target/
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Eclipse/IntelliJ IDEA/VSCode project files (optional, if you use an IDE)
+*.iml
+.idea/
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Spring Boot config if it has secrets
+src/main/resources/application.properties
+.env
 
 *.db

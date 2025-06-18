@@ -1,13 +1,15 @@
 // src/api.js
-const API_BASE_URL = 'http://localhost:3000'; // Backend URL. Adjust if different.
+const API_BASE_URL = 'http://localhost:8080'; // Backend URL. Adjust if different.
                                             // If using a proxy in package.json (for CRA), set to ''
-
 async function request(endpoint, options = {}) {
     const token = localStorage.getItem('authToken');
+
     const defaultHeaders = {
         'Content-Type': 'application/json',
     };
-    if (token) {
+
+    // Don't attach token to login or register
+    if (token && !['/auth/login', '/auth/register'].includes(endpoint)) {
         defaultHeaders['Authorization'] = `Bearer ${token}`;
     }
 
@@ -24,31 +26,28 @@ async function request(endpoint, options = {}) {
     if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
         try {
-            // Try to parse error as JSON first (common for Spring Boot errors)
             const errorBody = await response.json();
             errorMessage = errorBody.message || errorBody.error || JSON.stringify(errorBody);
         } catch (e) {
-            // If not JSON, try as text
             try {
                 const errorText = await response.text();
                 if (errorText) errorMessage = errorText;
             } catch (e2) {
-                // Fallback to statusText
                 errorMessage = response.statusText || errorMessage;
             }
         }
         console.error("API Error:", errorMessage, "on endpoint:", endpoint);
         throw new Error(errorMessage);
     }
-    
-    const contentType = response.headers.get("content-type");
 
+    const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
         return response.json();
     }
-    // For plain text responses (register, /user/me, /api/recipe_agent/run)
+
     return response.text();
 }
+
 
 export const loginUser = (credentials) => {
     return request('/auth/login', { // Expects { token: "..." }
