@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
+const Dotenv = require('dotenv-webpack');
 module.exports = {
   mode: 'development', // 或 'production'，後續可分環境
   entry: path.resolve(__dirname, 'src', 'index.jsx'),
@@ -37,10 +37,11 @@ module.exports = {
       template: path.resolve(__dirname, 'public', 'index.html'),
       inject: 'body',
     }),
+    new Dotenv()
   ],
   devServer: {
     static: path.resolve(__dirname, 'dist'),
-    port: 5173,
+    port: 3000,
     open: true,
     hot: true,
   },

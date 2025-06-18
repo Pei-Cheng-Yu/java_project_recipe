@@ -1,5 +1,5 @@
 // src/api.js
-const API_BASE_URL = 'http://localhost:8080'; // Backend URL. Adjust if different.
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; // Backend URL. Adjust if different.
                                             // If using a proxy in package.json (for CRA), set to ''
 async function request(endpoint, options = {}) {
     const token = localStorage.getItem('authToken');
