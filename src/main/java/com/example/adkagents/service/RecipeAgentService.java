@@ -33,58 +33,58 @@ public class RecipeAgentService {
     private final RecipeRepository recipeRepo;
     private final RecipeResponseRepository recipeResRepo;
     public String runRequest(String userInput) {
-        try {
-            // ✅ Per-request session setup
-            String UserId = userUtilService.getCurrentUser().getId().toString();
-            InMemoryRunner runner = new InMemoryRunner(agent);
-            Session session = runner.sessionService().createSession(agent.name(), UserId).blockingGet();
-            System.out.println("Session for user: " + userUtilService.getCurrentUser().getId());
-            Content userMessage = Content.fromParts(Part.fromText(userInput+ " store it using `saveRecipes` tool**"));
-            Flowable<Event> events = runner.runAsync(UserId, session.id(), userMessage);
+    try {
+        String UserId = userUtilService.getCurrentUser().getId().toString();
+        InMemoryRunner runner = new InMemoryRunner(agent);
+        Session session = runner.sessionService().createSession(agent.name(), UserId).blockingGet();
+        System.out.println("Session for user: " + userUtilService.getCurrentUser().getId());
 
-            StringBuilder response = new StringBuilder();
-            events.blockingForEach(event -> {
-                event.content().ifPresent(content ->
-                    content.parts().ifPresent(parts ->
-                        parts.forEach(part ->
-                            part.text().ifPresent(response::append)
-                        )
+        Content userMessage = Content.fromParts(Part.fromText(userInput + " store it using `saveRecipes` tool**"));
+        Flowable<Event> events = runner.runAsync(UserId, session.id(), userMessage);
+
+        StringBuilder response = new StringBuilder();
+        events.blockingForEach(event -> {
+            event.content().ifPresent(content ->
+                content.parts().ifPresent(parts ->
+                    parts.forEach(part ->
+                        part.text().ifPresent(response::append)
                     )
-                );
-            });;
-                // Extract JSON block from response
-            String output = response.toString();
-            int start = output.indexOf("{");
-            int end = output.lastIndexOf("}");
-            if (start != -1 && end != -1 && end > start) {
-                String jsonString = output.substring(start, end + 1);
+                )
+            );
+        });
 
-                // Parse JSON to get recipes_id
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, Object> jsonMap = mapper.readValue(jsonString, new TypeReference<>() {});
-                String recipesId = (String) jsonMap.get("recipes_id");
+        String output = response.toString();
 
-                if (recipesId == null) return "No recipes_id found in JSON.";
+        // Try to extract JSON block
+        int start = output.indexOf("{");
+        int end = output.lastIndexOf("}");
+        if (start != -1 && end != -1 && end > start) {
+            String jsonString = output.substring(start, end + 1);
 
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> jsonMap = mapper.readValue(jsonString, new TypeReference<>() {});
+            String recipesId = (String) jsonMap.get("recipes_id");
+
+            if (recipesId != null) {
                 RecipeResponse recipeRes = new RecipeResponse();
                 recipeRes.setId(recipesId);
                 recipeRes.setRawJson(jsonString);
+                recipeResRepo.save(recipeRes);
 
                 List<Recipe> stored = recipeRepo.findByRecipeSet_Id(recipesId);
-
                 if (stored.isEmpty()) {
                     throw new RuntimeException("No recipe found for ID: " + recipesId);
                 }
-
-
-            return recipesId;
+                return recipesId;
+            }
         }
 
-        return "No JSON object found in response.";
+        // ✅ No recipes_id, just return the full agent response
+        return output;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Agent crashed: " + e.getMessage();
-        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return "Agent crashed: " + e.getMessage();
     }
+}
 }
