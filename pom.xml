@@ -44,12 +44,12 @@
   <version>6.5.2.Final</version>
 </dependency>
 
-    <!-- In-memory H2 database -->
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <scope>runtime</scope>
-    </dependency>
+    <groupId>com.google.api-client</groupId>
+    <artifactId>google-api-client</artifactId>
+    <version>1.34.1</version>
+  </dependency>
+    
 
     <!-- Springdoc OpenAPI (Swagger UI) -->
     <dependency>

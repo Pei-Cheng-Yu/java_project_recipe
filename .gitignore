@@ -25,7 +25,9 @@ Thumbs.db
 # Ignore Spring Boot config if it has secrets
 src/main/resources/application.properties
 *target
-
+./target/*
+./Java recipe project.usls
+./bin/
 *.db
 
 # Maven target directory
@@ -76,4 +78,5 @@ src/main/resources/application.properties
 deploy-cloudrun.sh
 *.db
 
-env.yaml
+env.yamlbin/
+target/
