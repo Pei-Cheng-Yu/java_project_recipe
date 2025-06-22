@@ -1,6 +1,6 @@
 # 🍽️ Recipe Recommendation System
 
-This project is a Spring Boot application integrated with Google's ADK (Agent Development Kit) to generate and manage recipes using GenAI. It includes Swagger UI for API testing.
+This project is a Spring Boot application integrated with Google's ADK (Agent Development Kit) to generate and manage recipes using AI agent. It includes Swagger UI for API testing.
 
 ---
 
@@ -130,7 +130,7 @@ src/main/java
 
 ## 🙋 Contact
 
-For questions, contact [Your Name] or open an issue in the repository.
+For questions, contact [Pei-Cheng-Yu] or open an issue in the repository.
 
 ---
 
